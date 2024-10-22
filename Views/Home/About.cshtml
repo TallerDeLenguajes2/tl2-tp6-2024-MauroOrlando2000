@@ -1,0 +1,19 @@
+@model IEnumerable<tl2_tp6_2024_MauroOrlando2000.Models.Producto>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th><th>Nombre</th><th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach(Producto product in Model)
+            {
+                <tr>
+                    <td>@product.IdProducto</td><td>@product.Descripcion</td><td>@product.Precio</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
