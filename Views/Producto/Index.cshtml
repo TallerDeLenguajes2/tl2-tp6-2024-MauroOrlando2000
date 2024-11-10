@@ -1,0 +1,26 @@
+@model IEnumerable<tl2_tp6_2024_MauroOrlando2000.Models.Producto>
+
+@{ ViewData["Title"] = "Listado de productos"; }
+
+<h1>@ViewData["Title"]</h1>
+<a asp-action="CrearProducto" asp-controller="Producto" class="btn btn-primary mb-3">Crear Producto</a>
+<a asp-action="Buscar" asp-controller="Producto" class="btn btn-primary mb-3">Buscar Producto</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th><th>Nombre</th><th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach(Producto product in Model)
+            {
+                <tr>
+                    <td>@product.IdProducto</td><td>@product.Descripcion</td><td>@product.Precio</td>
+                    <td><a asp-action="ModificarProducto" asp-controller="Producto">Modificar</a></td>
+                    <td><a asp-action="EliminarProducto" asp-controller="Producto">Eliminar</a></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

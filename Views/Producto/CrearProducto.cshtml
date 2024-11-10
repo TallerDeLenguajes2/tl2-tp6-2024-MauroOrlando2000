@@ -1,0 +1,14 @@
+@model tl2_tp6_2024_MauroOrlando2000.Models.Producto
+
+@{ ViewData["Title"] = "Crear producto nuevo"; }
+
+<h1>@ViewData["Title"]</h1>
+
+<form action="CrearProducto" method="post">
+    <label for="desc">Descripcion:</label>
+    <input type="text" id="desc" name=desc>
+    <label for="precio">Precio:</label>
+    <input type="number" for="precio" name="precio">
+    <input type="submit" value="Enviar">
+    <input type="reset" value="Borrar">
+</form>
