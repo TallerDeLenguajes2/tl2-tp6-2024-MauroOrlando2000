@@ -1,6 +1,7 @@
 using Microsoft.Data.Sqlite;
+using tl2_tp6_2024_MauroOrlando2000.Models;
 
-namespace tl2_tp6_2024_MauroOrlando2000.Models
+namespace tl2_tp6_2024_MauroOrlando2000.Repositories
 {
     public class PresupuestoRepository : IPresupuestoRepository
     {

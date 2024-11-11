@@ -16,7 +16,7 @@
             foreach(Producto product in Model)
             {
                 <tr>
-                    <td>@product.IdProducto</td><td>@product.Descripcion</td><td>@product.Precio</td>
+                    <td>@product.IdProducto</td><td>@product.Descripcion</td><td>@product.Precio.ToString("n")</td>
                     <td><a asp-action="ModificarProducto" asp-controller="Producto">Modificar</a></td>
                     <td><a asp-action="EliminarProducto" asp-controller="Producto">Eliminar</a></td>
                 </tr>
