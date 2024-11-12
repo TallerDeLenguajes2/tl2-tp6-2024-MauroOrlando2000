@@ -46,6 +46,21 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                         lista.Add(nuevoPres);
                     }
                 }
+                query = "SELECT * FROM PresupuestosDetalle;";
+                command = new SqliteCommand(query, connection);
+                IProductoRepository repositorioProductos = new ProductoRepository();
+                using(var DataReader = command.ExecuteReader())
+                {
+                    while(DataReader.Read())
+                    {
+                        int idPres = Convert.ToInt32(DataReader["idPresupuesto"]);
+                        int idProd = Convert.ToInt32(DataReader["idProducto"]);
+                        int cant = Convert.ToInt32(DataReader["Cantidad"]);
+                        Producto aux = repositorioProductos.Buscar(idProd);
+                        Presupuesto auxPres = lista.Find(elemento => elemento.IdPresupuesto == idPres);
+                        auxPres.AgregarProducto(aux, cant);
+                    }
+                }
                 connection.Close();
             }
             return lista;
@@ -128,5 +143,19 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             }
             return anda;
         }
+
+        /* public bool ModificarPresupuesto(int id, Presupuesto budget)
+        {
+            bool anda = false;
+            Presupuesto aux = Buscar(id);
+            if(aux != null && aux != default(Presupuesto))
+            {
+                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                {
+                    var query = @"UPDATE Presupuestos SET"
+                }
+            }
+            return anda;
+        } */
     }
 }

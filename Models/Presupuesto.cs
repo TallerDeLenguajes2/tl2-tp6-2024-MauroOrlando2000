@@ -34,7 +34,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Models
             double monto = 0;
             foreach(PresupuestoDetalle detail in detalle)
             {
-                monto += detail.Cantidad * detail.Producto.IdProducto;
+                monto += detail.Cantidad * detail.Producto.Precio;
             }
             return monto;
         }
@@ -50,7 +50,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Models
             int cantidad = 0;
             foreach(PresupuestoDetalle detail in detalle)
             {
-                cantidad += cantidad;
+                cantidad += detail.Cantidad;
             }
             return cantidad;
         }

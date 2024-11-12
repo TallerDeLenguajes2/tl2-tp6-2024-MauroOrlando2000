@@ -1,0 +1,25 @@
+@model tl2_tp6_2024_MauroOrlando2000.Models.Presupuesto
+
+@{ 
+    ViewData["Title"] = "Modificar presupuesto";
+    int i=1;
+}
+
+<h2>@ViewData["Title"]</h2>
+<h4>@Model.NombreDestinatario</h4>
+<h4>@Model.FechaCreacion</h4>
+@foreach(PresupuestoDetalle detalle in Model.Detalle)
+{
+    <h4>Producto @i++</h4>
+    <h5>Descripcion: @detalle.Producto.Descripcion</h5>
+    <h5 style="margin-bottom: 0.5em;">Cantidad: @detalle.Cantidad</h5>
+}
+
+<form asp-action="ModificarPresupuesto" method="post" autocomplete="off">
+    <div class="form-group">
+        <label asp-for="NombreDestinatario">Nombre:</label>
+        <input type="text" asp-for="NombreDestinatario" required>
+        <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
+    </div>
+    <input type="submit" value="Enviar" class="btn btn-primary">
+</form>

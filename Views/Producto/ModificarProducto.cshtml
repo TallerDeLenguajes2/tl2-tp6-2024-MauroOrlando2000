@@ -1,0 +1,20 @@
+@model tl2_tp6_2024_MauroOrlando2000.Models.Producto
+
+@{ ViewData["Title"] = $"Modificar producto"; }
+
+<h2>@ViewData["Title"]</h2>
+<h4>Descripcion: @Model.Descripcion</h4>
+<h4>Precio: @Model.Precio</h4>
+
+<form asp-action="ModificarProducto" method="post" autocomplete="off">
+    <div class="form-group">
+        <label asp-for="Descripcion">Descripcion:</label>
+        <input type="text" asp-for="Descripcion">
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+    <div class ="form-group">
+        <label asp-for="Precio">Precio:</label>
+        <input type="number" asp-for="Precio" autocomplete="off">
+    </div>
+    <input type="submit" value="Enviar" class="btn btn-primary">
+</form>

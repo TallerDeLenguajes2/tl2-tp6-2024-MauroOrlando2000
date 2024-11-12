@@ -37,6 +37,14 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             {
                 using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
                 {
+                    if(product.Precio == null || product.Precio == default(int))
+                    {
+                        product.Precio = aux.Precio;
+                    }
+                    if(product.Descripcion == null || product.Descripcion == default(string?))
+                    {
+                        product.Descripcion = aux.Descripcion;
+                    }
                     var query = @"UPDATE Productos SET Descripcion = @Descripcion, Precio = @Precio WHERE idProducto = @id;";
                     connection.Open();
                     var command = new SqliteCommand(query, connection);

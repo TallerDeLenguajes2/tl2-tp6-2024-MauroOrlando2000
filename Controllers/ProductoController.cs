@@ -7,14 +7,16 @@ namespace tl2_tp6_2024_MauroOrlando2000.Controllers;
 [Route("controller")]
 public class ProductoController : Controller
 {
+    private ILogger<ProductoController> _logger;
     private IProductoRepository repositorioProductos;
 
-    public ProductoController()
+    public ProductoController(ILogger<ProductoController> logger)
     {
+        _logger = logger;
         repositorioProductos = new ProductoRepository();
     }
 
-    [HttpGet]
+    [HttpGet("Productos")]
     public IActionResult Index()
     {
         return View(repositorioProductos.ObtenerProductos());
@@ -31,9 +33,9 @@ public class ProductoController : Controller
     {
         if(!repositorioProductos.CrearProducto(producto))
         {
-            return Error();
+            return RedirectToAction("Error", "Producto");
         }
-        return Confirmar(producto.IdProducto);
+        return RedirectToAction("Confirmar", "Producto");
     }
 
     [HttpGet("/ModificarProducto/{id}")]
@@ -42,25 +44,28 @@ public class ProductoController : Controller
         return View(repositorioProductos.Buscar(id));
     }
 
-    [HttpPut("/ModificarProducto/{id}")]
+    [HttpPost("/ModificarProducto/{id}")]
     public IActionResult ModificarProducto([FromRoute]int id, [FromForm]Producto producto)
     {
-        bool anda = repositorioProductos.ModificarProducto(id, producto);
-        if(!anda)
+        if(!repositorioProductos.ModificarProducto(id, producto))
         {
-            return Error();
+            return RedirectToAction("Error", "Producto");
         }
-        return Index();
+        return RedirectToAction("Confirmar", "Producto");
     }
 
-    [HttpDelete]
+    [HttpPost("/EliminarProducto/{id}")]
     public IActionResult EliminarProducto([FromRoute]int id)
     {
-        return View(repositorioProductos.EliminarProducto(id));
+        if(!repositorioProductos.EliminarProducto(id))
+        {
+            return RedirectToAction("Error", "Producto");
+        }
+        return RedirectToAction("Confirmar", "Producto");
     }
 
-    [HttpGet]
-    public IActionResult Confirmar([FromRoute]int id)
+    [HttpGet("/Confirmar")]
+    public IActionResult Confirmar()
     {
         return View();
     }
