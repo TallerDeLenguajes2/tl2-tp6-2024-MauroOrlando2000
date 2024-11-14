@@ -1,0 +1,28 @@
+@model tl2_tp6_2024_MauroOrlando2000.Models.Presupuesto
+
+@{ 
+    ViewData["Title"] = "Agregar producto al presupuesto de " + Model.NombreDestinatario;
+    IEnumerable<Producto> Productos = (List<Producto>)TempData["Productos"];
+}
+
+<h2>@ViewData["Title"]</h2>
+<form asp-action="AgregarProducto" method="post">
+    <div class="form-group">
+        <label for="Producto">Ingrese el ID del producto:</label>
+        <select for="Producto" id="Producto" name="Producto" required>
+            <option value="" disabled selected hidden>-- Seleccione una opcion --</option>
+        @{
+            foreach(Producto product in Productos)
+            {
+                <option value="@product">@product.Descripcion - @product.Precio.ToString("C")</option>
+            }
+        }
+        </select>
+    </div>
+    <div class ="form-group">
+        <label for="Cantidad">Cuantos quiere?:</label>
+        <input type="number" for="Cantidad" name="Cantidad" required>
+    </div>
+    <input type="submit" value="Enviar" class="btn btn-primary">
+    <input type="reset" value="Borrar" class="btn btn-danger">
+</form>

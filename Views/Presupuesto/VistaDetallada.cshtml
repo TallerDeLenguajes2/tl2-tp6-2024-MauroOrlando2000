@@ -1,0 +1,30 @@
+@model tl2_tp6_2024_MauroOrlando2000.Models.Presupuesto
+
+@{ ViewData["Title"] = "Detalle de presupuesto de " + Model.NombreDestinatario; }
+
+<h1>@ViewData["Title"]</h1>
+<a asp-action="AgregarProducto" asp-controller="Presupuesto" asp-route-id="@Model.IdPresupuesto" class="btn btn-primary" style="margin-bottom: 0.5em;">Agregar un producto</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Descripcion</th><th>Precio</th><th>Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(Model.Detalle.Count == 0)
+        {
+            <td colspan="3">No hay productos cargados</td>
+        }
+        else
+        {
+            @foreach(PresupuestoDetalle detail in Model.Detalle)
+            {
+                <tr>
+                    <td>@detail.Producto.Descripcion</td><td>@detail.Producto.Precio.ToString("C") x @detail.Cantidad</td><td>@detail.Monto().ToString("C")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<h5>SubTotal: @Model.MontoPresupuesto().ToString("c")</h5>
+<h3>Total: @Model.MontoPresupuestoConIVA().ToString("c")</h3>

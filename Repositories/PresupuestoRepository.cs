@@ -68,36 +68,13 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
 
         public Presupuesto? Buscar(int id)
         {
-            Presupuesto? aux = ObtenerPresupuestos().Find(x => x.IdPresupuesto == id);
-            if(aux != null && aux != default(Presupuesto))
-            {
-                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
-                {
-                    var query = @"SELECT * FROM PresupuestosDetalle WHERE idPresupuesto = @id";
-                    connection.Open();
-                    var command = new SqliteCommand(query, connection);
-                    command.Parameters.AddWithValue("@id", id);
-                    using(var DataReader = command.ExecuteReader())
-                    {
-                        List<Producto> listaProductos = new ProductoRepository().ObtenerProductos();
-                        while(DataReader.Read())
-                        {
-                            int idProd = Convert.ToInt32(DataReader["idProducto"]);
-                            int cant = Convert.ToInt32(DataReader["Cantidad"]);
-                            Producto auxProd = listaProductos.Find(x => x.IdProducto == idProd);
-                            aux.AgregarProducto(auxProd, cant);
-                        }
-                    }
-                    connection.Close();
-                }
-            }
-            return aux;
+            return ObtenerPresupuestos().Find(x => x.IdPresupuesto == id);
         }
 
-        public bool AgregarProducto(int idPres, int idProd, int cant)
+        public bool AgregarProducto(int idPres, PresupuestoDetalle detalle)
         {
             Presupuesto? aux = Buscar(idPres);
-            Producto? auxProd = new ProductoRepository().ObtenerProductos().Find(x => x.IdProducto == idProd);
+            Producto? auxProd = new ProductoRepository().ObtenerProductos().Find(x => x.IdProducto == detalle.Producto.IdProducto);
             bool anda = false;
             if(aux != null && aux != default(Presupuesto) && auxProd != null && auxProd != default(Producto))
             {
@@ -107,8 +84,8 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                     connection.Open();
                     var command = new SqliteCommand(query, connection);
                     command.Parameters.AddWithValue("@idPres", idPres);
-                    command.Parameters.AddWithValue("@idProd", idProd);
-                    command.Parameters.AddWithValue("@cant", cant);
+                    command.Parameters.AddWithValue("@idProd", detalle.Producto.IdProducto);
+                    command.Parameters.AddWithValue("@cant", detalle.Cantidad);
                     anda = command.ExecuteNonQuery() > 0;
                     connection.Close();
                 }
@@ -144,7 +121,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             return anda;
         }
 
-        /* public bool ModificarPresupuesto(int id, Presupuesto budget)
+        public bool ModificarPresupuesto(int id, Presupuesto budget)
         {
             bool anda = false;
             Presupuesto aux = Buscar(id);
@@ -152,10 +129,16 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             {
                 using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
                 {
-                    var query = @"UPDATE Presupuestos SET"
+                    var query = @"UPDATE Presupuestos SET NombreDestinatario = @Nombre WHERE idPresupuesto = @id";
+                    connection.Open();
+                    var command = new SqliteCommand(query, connection);
+                    command.Parameters.AddWithValue("@Nombre", budget.NombreDestinatario);
+                    command.Parameters.AddWithValue("@id", id);
+                    anda = command.ExecuteNonQuery() > 0;
+                    connection.Close();
                 }
             }
             return anda;
-        } */
+        }
     }
 }
