@@ -66,8 +66,9 @@ public class PresupuestoController : Controller
     [HttpGet("/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromRoute]int id)
     {
-        TempData["Productos"] = new ProductoRepository().ObtenerProductos();
-        return View(repositorioPresupuestos.Buscar(id));
+        ViewData["idPres"] = id;
+        ViewData["Productos"] = new ProductoRepository().ObtenerProductos();
+        return View();
     }
 
     [HttpPost("/AgregarProducto/{id}")]
@@ -77,7 +78,7 @@ public class PresupuestoController : Controller
         {
             return RedirectToAction("Error", "Presupuesto");
         }
-        return RedirectToAction("ConfimarPres", "Presupuesto");
+        return RedirectToAction("ConfirmarPres", "Presupuesto");
     }
 
     [HttpGet("/VistaDetallada/{id}")]
