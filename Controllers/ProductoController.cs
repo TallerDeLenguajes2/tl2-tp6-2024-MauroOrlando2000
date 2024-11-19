@@ -4,7 +4,7 @@ using tl2_tp6_2024_MauroOrlando2000.Models;
 using tl2_tp6_2024_MauroOrlando2000.Repositories;
 namespace tl2_tp6_2024_MauroOrlando2000.Controllers;
 
-[Route("controller")]
+[Route("Producto")]
 public class ProductoController : Controller
 {
     private ILogger<ProductoController> _logger;
@@ -16,56 +16,62 @@ public class ProductoController : Controller
         repositorioProductos = new ProductoRepository();
     }
 
-    [HttpGet("Productos")]
+    [HttpGet]
     public IActionResult Index()
     {
         return View(repositorioProductos.ObtenerProductos());
     }
 
-    [HttpGet("/CrearProducto")]
+    [HttpGet("/Producto/CrearProducto")]
     public IActionResult CrearProducto()
     {
         return View();
     }
 
-    [HttpPost("/CrearProducto")]
+    [HttpPost("/Producto/CrearProducto")]
     public IActionResult CrearProducto([FromForm]Producto producto)
     {
         if(!repositorioProductos.CrearProducto(producto))
         {
-            return RedirectToAction("Error", "Producto");
+            return RedirectToAction("Rechazo", "Producto");
         }
         return RedirectToAction("Confirmar", "Producto");
     }
 
-    [HttpGet("/ModificarProducto/{id}")]
+    [HttpGet("/Producto/ModificarProducto/{id}")]
     public IActionResult ModificarProducto([FromRoute]int id)
     {
         return View(repositorioProductos.Buscar(id));
     }
 
-    [HttpPost("/ModificarProducto/{id}")]
+    [HttpPost("/Producto/ModificarProducto/{id}")]
     public IActionResult ModificarProducto([FromRoute]int id, [FromForm]Producto producto)
     {
         if(!repositorioProductos.ModificarProducto(id, producto))
         {
-            return RedirectToAction("Error", "Producto");
+            return RedirectToAction("Rechazo", "Producto");
         }
         return RedirectToAction("Confirmar", "Producto");
     }
 
-    [HttpPost("/EliminarProducto/{id}")]
+    [HttpPost("/Producto/EliminarProducto/{id}")]
     public IActionResult EliminarProducto([FromRoute]int id)
     {
         if(!repositorioProductos.EliminarProducto(id))
         {
-            return RedirectToAction("Error", "Producto");
+            return RedirectToAction("Rechazo", "Producto");
         }
         return RedirectToAction("Confirmar", "Producto");
     }
 
-    [HttpGet("/Confirmar")]
+    [HttpGet("/Producto/Confirmar")]
     public IActionResult Confirmar()
+    {
+        return View();
+    }
+
+    [HttpGet("/Producto/Rechazo")]
+    public IActionResult Rechazo()
     {
         return View();
     }

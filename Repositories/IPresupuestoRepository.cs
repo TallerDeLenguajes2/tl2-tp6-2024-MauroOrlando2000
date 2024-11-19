@@ -9,6 +9,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
         Presupuesto? Buscar(int id);
         bool AgregarProducto(int idPres, PresupuestoDetalle detalle);
         bool EliminarPresupuesto(int id);
-        bool ModificarPresupuesto(int id, Presupuesto budget);
+        bool EliminarProductoDetalle(int idPres, int idProd);
     }
 }

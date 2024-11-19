@@ -1,11 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using tl2_tp6_2024_MauroOrlando2000.Models;
 using tl2_tp6_2024_MauroOrlando2000.Repositories;
 namespace tl2_tp6_2024_MauroOrlando2000.Controllers;
 
-[Route("controller")]
+[Route("Presupuesto")]
 public class PresupuestoController : Controller
 {
     private IPresupuestoRepository repositorioPresupuestos;
@@ -21,49 +20,34 @@ public class PresupuestoController : Controller
         return View(repositorioPresupuestos.ObtenerPresupuestos());
     }
 
-    [HttpGet("/CrearPresupuesto")]
+    [HttpGet("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto()
     {
+        ViewData["Clientes"] = new ClienteRepository().ObtenerClientes();
         return View();
     }
 
-    [HttpPost("/CrearPresupuesto")]
+    [HttpPost("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto([FromForm]Presupuesto budget)
     {
         if(!repositorioPresupuestos.CrearPresupuesto(budget))
         {
-            return RedirectToAction("Error", "Presupuesto");
+            return RedirectToAction("Rechazo", "Presupuesto");
         }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
+        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
-    [HttpGet("/ModificarPresupuesto/{id}")]
-    public IActionResult ModificarPresupuesto([FromRoute]int id)
-    {
-        return View(repositorioPresupuestos.Buscar(id));
-    }
-
-    [HttpPost("/ModificarPresupuesto/{id}")]
-    public IActionResult ModificarPresupuesto([FromRoute]int id, [FromForm]Presupuesto budget)
-    {
-        if(!repositorioPresupuestos.ModificarPresupuesto(id, budget))
-        {
-            return RedirectToAction("Error", "Presupuesto");
-        }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
-    }
-
-    [HttpPost("EliminarPresupuesto/{id}")]
+    [HttpPost("/Presupuesto/EliminarPresupuesto/{id}")]
     public IActionResult EliminarPresupuesto([FromRoute]int id)
     {
         if(!repositorioPresupuestos.EliminarPresupuesto(id))
         {
-            return RedirectToAction("Error", "Presupuesto");
+            return RedirectToAction("Rechazo", "Presupuesto");
         }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
+        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
-    [HttpGet("/AgregarProducto/{id}")]
+    [HttpGet("/Presupuesto/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromRoute]int id)
     {
         ViewData["idPres"] = id;
@@ -71,24 +55,40 @@ public class PresupuestoController : Controller
         return View();
     }
 
-    [HttpPost("/AgregarProducto/{id}")]
+    [HttpPost("/Presupuesto/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromRoute]int id, [FromForm]PresupuestoDetalle detalle)
     {
         if(!repositorioPresupuestos.AgregarProducto(id, detalle))
         {
-            return RedirectToAction("Error", "Presupuesto");
+            return RedirectToAction("Rechazo", "Presupuesto");
         }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
+        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
-    [HttpGet("/VistaDetallada/{id}")]
+    [HttpGet("/Presupuesto/VistaDetallada/{id}")]
     public IActionResult VistaDetallada([FromRoute]int id)
     {
         return View(repositorioPresupuestos.Buscar(id));
     }
 
-    [HttpGet("/ConfirmarPres")]
-    public IActionResult ConfirmarPres()
+    [HttpPost("/Presupuesto/EliminarProductoDetalle/{id}")]
+    public IActionResult EliminarProductoDetalle([FromRoute]int id, [FromForm]int IdProducto)
+    {
+        if(!repositorioPresupuestos.EliminarProductoDetalle(id, IdProducto))
+        {
+            return RedirectToAction("Rechazo", "Presupuesto");
+        }
+        return RedirectToAction("Confirmar", "Presupuesto");
+    }
+
+    [HttpGet("/Presupuesto/Confirmar")]
+    public IActionResult Confirmar()
+    {
+        return View();
+    }
+
+    [HttpGet("/Presupuesto/Rechazo")]
+    public IActionResult Rechazo()
     {
         return View();
     }

@@ -5,22 +5,26 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
 {
     public class PresupuestoRepository : IPresupuestoRepository
     {
-        string cadenaConexion = "Data Source=DB/Tienda.db;Cache=Shared";
+        readonly string cadenaConexion = "Data Source=DB/Tienda.db;Cache=Shared";
 
         public bool CrearPresupuesto(Presupuesto budget)
         {
             bool anda = false;
             if(budget != null)
             {
-                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                Cliente aux = new ClienteRepository().Buscar(budget.IdCliente);
+                if(aux != null && aux != default(Cliente))
                 {
-                    connection.Open();
-                    var query = @"INSERT INTO Presupuestos (NombreDestinatario, FechaCreacion) VALUES (@NombreDestinatario, @FechaCreacion);";
-                    var command = new SqliteCommand(query, connection);
-                    command.Parameters.AddWithValue("@NombreDestinatario", budget.NombreDestinatario);
-                    command.Parameters.AddWithValue("@FechaCreacion", budget.FechaCreacion);
-                    anda = command.ExecuteNonQuery() > 0;
-                    connection.Close();
+                    using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                    {
+                        connection.Open();
+                        var query = @"INSERT INTO Presupuestos (idCliente, FechaCreacion) VALUES (@idCliente, @FechaCreacion);";
+                        var command = new SqliteCommand(query, connection);
+                        command.Parameters.AddWithValue("@idCliente", budget.IdCliente);
+                        command.Parameters.AddWithValue("@FechaCreacion", budget.FechaCreacion);
+                        anda = command.ExecuteNonQuery() > 0;
+                        connection.Close();
+                    }
                 }
             }
             return anda;
@@ -31,17 +35,21 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             List<Presupuesto> lista = new List<Presupuesto>();
             using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
-                var query = "SELECT * FROM Presupuestos";
+                var query = "SELECT * FROM Presupuestos INNER JOIN Cliente USING(idCliente);";
                 connection.Open();
                 var command = new SqliteCommand(query, connection);
                 using(var DataReader = command.ExecuteReader())
                 {
                     while(DataReader.Read())
                     {
+                        int idCliente = Convert.ToInt32(DataReader["idCliente"]);
+                        string nombre = Convert.ToString(DataReader["Nombre"]);
+                        string email = Convert.ToString(DataReader["Email"]);
+                        uint? phone = Convert.ToUInt32(DataReader["Telefono"]);
+                        Cliente nuevoCliente = new Cliente(idCliente, nombre, email, phone);
                         int idPres = Convert.ToInt32(DataReader["idPresupuesto"]);
-                        string nombre = Convert.ToString(DataReader["NombreDestinatario"]);
                         string fecha = Convert.ToString(DataReader["FechaCreacion"]);
-                        Presupuesto nuevoPres = new Presupuesto(idPres, nombre);
+                        Presupuesto nuevoPres = new Presupuesto(idPres, nuevoCliente);
                         nuevoPres.CambiarFecha(fecha);
                         lista.Add(nuevoPres);
                     }
@@ -74,20 +82,37 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
         public bool AgregarProducto(int idPres, PresupuestoDetalle detalle)
         {
             Presupuesto? aux = Buscar(idPres);
-            Producto? auxProd = new ProductoRepository().ObtenerProductos().Find(x => x.IdProducto == detalle.IDProducto);
+            Producto? auxProd = new ProductoRepository().Buscar(detalle.IDProducto);
             bool anda = false;
             if(aux != null && aux != default(Presupuesto) && auxProd != null && auxProd != default(Producto))
             {
-                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                if(aux.Detalle.Exists(x => x.Producto.IdProducto == auxProd.IdProducto))
                 {
-                    var query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) VALUES (@idPres, @idProd, @cant);";
-                    connection.Open();
-                    var command = new SqliteCommand(query, connection);
-                    command.Parameters.AddWithValue("@idPres", aux.IdPresupuesto);
-                    command.Parameters.AddWithValue("@idProd", auxProd.IdProducto);
-                    command.Parameters.AddWithValue("@cant", detalle.Cantidad);
-                    anda = command.ExecuteNonQuery() > 0;
-                    connection.Close();
+                    using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                    {
+                        var query = @"UPDATE PresupuestosDetalle SET Cantidad = Cantidad + @Cant WHERE idPresupuesto = @idPresu AND idProducto = @idProdu;";
+                        connection.Open();
+                        var command = new SqliteCommand(query, connection);
+                        command.Parameters.AddWithValue("@Cant", detalle.Cantidad);
+                        command.Parameters.AddWithValue("@idPresu", idPres);
+                        command.Parameters.AddWithValue("@idProdu", detalle.IDProducto);
+                        anda = command.ExecuteNonQuery() > 0;
+                        connection.Close();
+                    }
+                }
+                else
+                {
+                    using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                    {
+                        var query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) VALUES (@idPres, @idProd, @cant);";
+                        connection.Open();
+                        var command = new SqliteCommand(query, connection);
+                        command.Parameters.AddWithValue("@idPres", aux.IdPresupuesto);
+                        command.Parameters.AddWithValue("@idProd", auxProd.IdProducto);
+                        command.Parameters.AddWithValue("@cant", detalle.Cantidad);
+                        anda = command.ExecuteNonQuery() > 0;
+                        connection.Close();
+                    }
                 }
             }
             return anda;
@@ -121,21 +146,24 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             return anda;
         }
 
-        public bool ModificarPresupuesto(int id, Presupuesto budget)
+        public bool EliminarProductoDetalle(int idPres, int idProd)
         {
             bool anda = false;
-            Presupuesto aux = Buscar(id);
+            Presupuesto? aux = Buscar(idPres);
             if(aux != null && aux != default(Presupuesto))
             {
-                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                if(aux.Detalle.Exists(x => x.Producto.IdProducto == idProd))
                 {
-                    var query = @"UPDATE Presupuestos SET NombreDestinatario = @Nombre WHERE idPresupuesto = @id";
-                    connection.Open();
-                    var command = new SqliteCommand(query, connection);
-                    command.Parameters.AddWithValue("@Nombre", budget.NombreDestinatario);
-                    command.Parameters.AddWithValue("@id", id);
-                    anda = command.ExecuteNonQuery() > 0;
-                    connection.Close();
+                    using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                    {
+                        var query = @"DELETE FROM PresupuestosDetalle WHERE idPresupuesto = @idPresu AND idProducto = @idProdu;";
+                        connection.Open();
+                        var command = new SqliteCommand(query, connection);
+                        command.Parameters.AddWithValue("@idPresu", idPres);
+                        command.Parameters.AddWithValue("@idProdu", idProd);
+                        anda = command.ExecuteNonQuery() > 0;
+                        connection.Close();
+                    }
                 }
             }
             return anda;

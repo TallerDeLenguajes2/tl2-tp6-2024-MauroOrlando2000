@@ -1,14 +1,24 @@
 @model tl2_tp6_2024_MauroOrlando2000.Models.Presupuesto
 
-@{ ViewData["Title"] = "Crear Presupuesto"; }
+@{ 
+    ViewData["Title"] = "Crear Presupuesto";
+    IEnumerable<Cliente> clientes = (List<Cliente>)ViewData["Clientes"];
+}
 
 <h1>@ViewData["Title"]</h1>
 
 <form asp-action="CrearPresupuesto" method="post">
     <div class="form-group">
-        <label for="NombreDestinatario">Nombre destinatario:</label>
-        <input type="text" id="NombreDestinatario" name="NombreDestinatario" required>
-        <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
+        <label asp-for="IdCliente">Cliente asociado:</label>
+        <select asp-for="IdCliente" required>
+            <option value="" disabled selected hidden>-- Seleccione una opcion --</option>
+        @{
+            foreach(Cliente cliente in clientes)
+            {
+                <option value="@cliente.IdCliente">@cliente.Nombre</option>
+            }
+        }
+        </select>
     </div>
     <input type="submit" value="Enviar" class="btn btn-primary">
     <input type="reset" value="Borrar" class="btn btn-danger">

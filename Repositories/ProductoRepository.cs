@@ -90,6 +90,15 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             {
                 using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
                 {
+                    var query = @"DELETE FROM PresupuestosDetalle WHERE idProducto = @idProd;";
+                    connection.Open();
+                    var command = new SqliteCommand(query, connection);
+                    command.Parameters.AddWithValue("@idProd", id);
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+                {
                     var query = @"DELETE FROM Productos WHERE idProducto = @id;";
                     connection.Open();
                     var command = new SqliteCommand(query, connection);

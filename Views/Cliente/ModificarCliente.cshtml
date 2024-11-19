@@ -1,0 +1,25 @@
+@model tl2_tp6_2024_MauroOrlando2000.Models.Cliente
+
+@{ ViewData["Title"] = "Modificar cliente " + Model.Nombre; }
+
+<h3>@ViewData["Title"]</h3>
+
+<form asp-action="ModificarCliente" method="post" autocomplete="off">
+    <div class="form-group">
+        <label asp-for="Nombre">Nombre:</label>
+        <input type="text" asp-for="Nombre">
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email">Email:</label>
+        <input type="email" asp-for="Email">
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Telefono">Telefono:</label>
+        <input type="text" asp-for="Telefono">
+        <span asp-validation-for="Telefono" class="text-danger"></span>
+    </div>
+    <input type="submit" value="Enviar" class="btn btn-primary">
+    <p style="color: crimson;">*Nota: si deja algun espacio vacio, este será completado automaticamente con su valor previo</p>
+</form>

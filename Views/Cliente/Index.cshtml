@@ -1,0 +1,37 @@
+@model IEnumerable<tl2_tp6_2024_MauroOrlando2000.Models.Cliente>
+
+@{ ViewData["Title"] = "Lista de clientes"; }
+
+<h1>@ViewData["Title"]</h1>
+
+<a asp-action="CrearCliente" asp-controller="Cliente" class="btn btn-primary mb-3">Crear cliente</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th><th>Nombre</th><th>Email</th><th>Telefono</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(Cliente cliente in Model)
+        {
+            <tr>
+                <td>@cliente.IdCliente</td>
+                <td>@cliente.Nombre</td>
+                <td>@cliente.Email</td>
+                @if(cliente.Telefono == null)
+                {
+                    <td>No ingresado</td>
+                }
+                else
+                {
+                    <td>@cliente.Telefono</td>
+                }
+                <td><a class="btn btn-primary" asp-action="ModificarCliente" asp-controller="Cliente" asp-route-id="@cliente.IdCliente">Modificar</a></td>
+                <td><form asp-action="EliminarCliente" asp-controller="Cliente" asp-route-id="@cliente.IdCliente" method="post">
+                    <input type="submit" class="btn btn-danger" value="Eliminar" onclick="return confirm('¿Desea eliminar el cliente @cliente.Nombre?')">
+                </form></td>
+            </tr>
+        }
+    </tbody>
+</table>

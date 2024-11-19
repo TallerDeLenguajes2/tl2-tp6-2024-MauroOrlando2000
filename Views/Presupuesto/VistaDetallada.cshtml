@@ -1,6 +1,6 @@
 @model tl2_tp6_2024_MauroOrlando2000.Models.Presupuesto
 
-@{ ViewData["Title"] = "Detalle de presupuesto de " + Model.NombreDestinatario; }
+@{ ViewData["Title"] = "Detalle de presupuesto de " + Model.Cliente.Nombre; }
 
 <h1>@ViewData["Title"]</h1>
 <a asp-action="AgregarProducto" asp-controller="Presupuesto" asp-route-id="@Model.IdPresupuesto" class="btn btn-primary" style="margin-bottom: 0.5em;">Agregar un producto</a>
@@ -20,7 +20,13 @@
             @foreach(PresupuestoDetalle detail in Model.Detalle)
             {
                 <tr>
-                    <td>@detail.Producto.Descripcion</td><td>@detail.Producto.Precio.ToString("C") x @detail.Cantidad</td><td>@detail.Monto().ToString("C")</td>
+                    <td>@detail.Producto.Descripcion</td>
+                    <td>@detail.Producto.Precio.ToString("C") x @detail.Cantidad</td>
+                    <td>@detail.Monto().ToString("C")</td>
+                    <td><form asp-action="EliminarProductoDetalle" asp-controller="Presupuesto" asp-route-id="@Model.IdPresupuesto" method="post">
+                        <input type="hidden" asp-for="@detail.Producto.IdProducto" name="IdProducto">
+                    <input type="submit" class="btn btn-danger" value="Eliminar" onclick="return confirm('¿Desea eliminar el producto @detail.Producto.Descripcion?')">
+                </form></td>
                 </tr>
             }
         }

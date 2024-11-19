@@ -1,31 +1,29 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-
 namespace tl2_tp6_2024_MauroOrlando2000.Models
 {
     public class Presupuesto
     {
         private int idPresupuesto;
-        private string nombreDestinatario;
-        private DateOnly fechaCreacion;
+        private Cliente cliente;
+        private string fechaCreacion;
         private List<PresupuestoDetalle> detalle;
 
         public int IdPresupuesto { get => idPresupuesto; }
-        public string NombreDestinatario { get => nombreDestinatario; set => nombreDestinatario = value; }
-        public string FechaCreacion { get => fechaCreacion.ToString("o"); }
+        public Cliente Cliente { get => cliente; }
+        public string FechaCreacion { get => fechaCreacion; }
         public List<PresupuestoDetalle> Detalle { get => detalle; }
+        public int IdCliente {get; set;}
 
         public Presupuesto()
         {
-            fechaCreacion = DateOnly.FromDateTime(DateTime.Today);
+            fechaCreacion = DateOnly.FromDateTime(DateTime.Today).ToString("o");
             detalle = new List<PresupuestoDetalle>();
         }
 
-        public Presupuesto(int id, string nom)
+        public Presupuesto(int idPres, Cliente client)
         {
-            idPresupuesto = id;
-            nombreDestinatario = nom;
-            fechaCreacion = DateOnly.FromDateTime(DateTime.Today);
+            idPresupuesto = idPres;
+            cliente = client;
+            fechaCreacion = DateOnly.FromDateTime(DateTime.Today).ToString("o");
             detalle = new List<PresupuestoDetalle>();
         }
 
@@ -64,7 +62,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Models
 
         public void CambiarFecha(string fecha)
         {
-            fechaCreacion = DateOnly.Parse(fecha);
+            fechaCreacion = fecha;;
         }
     }
 }
