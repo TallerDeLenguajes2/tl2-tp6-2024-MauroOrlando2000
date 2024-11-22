@@ -19,14 +19,7 @@
                 <td>@cliente.IdCliente</td>
                 <td>@cliente.Nombre</td>
                 <td>@cliente.Email</td>
-                @if(cliente.Telefono == null)
-                {
-                    <td>No ingresado</td>
-                }
-                else
-                {
-                    <td>@cliente.Telefono</td>
-                }
+                <td>@cliente.Telefono</td>
                 <td><a class="btn btn-primary" asp-action="ModificarCliente" asp-controller="Cliente" asp-route-id="@cliente.IdCliente">Modificar</a></td>
                 <td><form asp-action="EliminarCliente" asp-controller="Cliente" asp-route-id="@cliente.IdCliente" method="post">
                     <input type="submit" class="btn btn-danger" value="Eliminar" onclick="return confirm('¿Desea eliminar el cliente @cliente.Nombre?')">

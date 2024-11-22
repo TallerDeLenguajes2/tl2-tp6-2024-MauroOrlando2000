@@ -30,7 +30,11 @@ namespace tl2_tp6_2024_MauroOrlando2000.Controllers
         [HttpPost("/Cliente/CrearCliente")]
         public IActionResult CrearCliente(Cliente client)
         {
-            if(!repositorioClientes.CrearCliente(client))
+            if(!ModelState.IsValid)
+            {
+                return View();
+            }
+            else if(!repositorioClientes.CrearCliente(client))
             {
                 return RedirectToAction("Rechazo", "Cliente");
             }

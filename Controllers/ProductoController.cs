@@ -31,7 +31,11 @@ public class ProductoController : Controller
     [HttpPost("/Producto/CrearProducto")]
     public IActionResult CrearProducto([FromForm]Producto producto)
     {
-        if(!repositorioProductos.CrearProducto(producto))
+        if(!ModelState.IsValid)
+        {
+            return View();
+        }
+        else if (!repositorioProductos.CrearProducto(producto))
         {
             return RedirectToAction("Rechazo", "Producto");
         }

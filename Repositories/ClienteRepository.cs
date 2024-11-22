@@ -22,7 +22,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Models
                         int idCliente = Convert.ToInt32(DataReader["idCliente"]);
                         string nombre = Convert.ToString(DataReader["Nombre"]);
                         string email = Convert.ToString(DataReader["Email"]);
-                        uint? phone = Convert.ToUInt32(DataReader["Telefono"]);
+                        uint phone = Convert.ToUInt32(DataReader["Telefono"]);
                         Cliente nuevoCliente = new Cliente(idCliente, nombre, email, phone);
                         lista.Add(nuevoCliente);
                     }
@@ -104,10 +104,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Models
                     if(client.Nombre == null)
                     {
                         client.Nombre = aux.Nombre;
-                    }
-                    if(client.Telefono == null)
-                    {
-                        client.Telefono = aux.Telefono;
                     }
                     var query = @"UPDATE Cliente SET Nombre = @name, Email = @mail, Telefono = @phone WHERE idCliente = @idClient;";
                     connection.Open();

@@ -45,7 +45,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                         int idCliente = Convert.ToInt32(DataReader["idCliente"]);
                         string nombre = Convert.ToString(DataReader["Nombre"]);
                         string email = Convert.ToString(DataReader["Email"]);
-                        uint? phone = Convert.ToUInt32(DataReader["Telefono"]);
+                        uint phone = Convert.ToUInt32(DataReader["Telefono"]);
                         Cliente nuevoCliente = new Cliente(idCliente, nombre, email, phone);
                         int idPres = Convert.ToInt32(DataReader["idPresupuesto"]);
                         string fecha = Convert.ToString(DataReader["FechaCreacion"]);
