@@ -1,23 +1,14 @@
-@model tl2_tp6_2024_MauroOrlando2000.Models.Presupuesto
+@model tl2_tp6_2024_MauroOrlando2000.Models.AltaPresupuestoViewModel
 
-@{ 
-    ViewData["Title"] = "Crear Presupuesto";
-    IEnumerable<Cliente> clientes = (List<Cliente>)ViewData["Clientes"];
-}
+@{ ViewData["Title"] = "Crear Presupuesto"; }
 
 <h1>@ViewData["Title"]</h1>
 
 <form asp-action="CrearPresupuesto" method="post">
     <div class="form-group">
         <label asp-for="IdCliente">Cliente asociado:</label>
-        <select asp-for="IdCliente" required>
+        <select asp-for="IdCliente" class="form-control" asp-items="Model.ListadoClientes" style="margin-bottom: 1em;" required>
             <option value="" disabled selected hidden>-- Seleccione una opcion --</option>
-        @{
-            foreach(Cliente cliente in clientes)
-            {
-                <option value="@cliente.IdCliente">@cliente.Nombre</option>
-            }
-        }
         </select>
     </div>
     <input type="submit" value="Enviar" class="btn btn-primary">

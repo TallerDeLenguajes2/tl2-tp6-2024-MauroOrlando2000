@@ -23,12 +23,12 @@ public class PresupuestoController : Controller
     [HttpGet("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto()
     {
-        ViewData["Clientes"] = new ClienteRepository().ObtenerClientes();
-        return View();
+        var ViewPresupuesto = new AltaPresupuestoViewModel();
+        return View(ViewPresupuesto);
     }
 
     [HttpPost("/Presupuesto/CrearPresupuesto")]
-    public IActionResult CrearPresupuesto([FromForm]Presupuesto budget)
+    public IActionResult CrearPresupuesto([FromForm]AltaPresupuestoViewModel budget)
     {
         if(!repositorioPresupuestos.CrearPresupuesto(budget))
         {
@@ -50,15 +50,15 @@ public class PresupuestoController : Controller
     [HttpGet("/Presupuesto/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromRoute]int id)
     {
-        ViewData["idPres"] = id;
-        ViewData["Productos"] = new ProductoRepository().ObtenerProductos();
-        return View();
+        var ViewProductos = new AgregarProductoViewModel();
+        ViewProductos.IdPresupuesto = id;
+        return View(ViewProductos);
     }
 
     [HttpPost("/Presupuesto/AgregarProducto/{id}")]
-    public IActionResult AgregarProducto([FromRoute]int id, [FromForm]PresupuestoDetalle detalle)
+    public IActionResult AgregarProducto([FromForm]AgregarProductoViewModel detalle)
     {
-        if(!repositorioPresupuestos.AgregarProducto(id, detalle))
+        if(!repositorioPresupuestos.AgregarProducto(detalle))
         {
             return RedirectToAction("Rechazo", "Presupuesto");
         }

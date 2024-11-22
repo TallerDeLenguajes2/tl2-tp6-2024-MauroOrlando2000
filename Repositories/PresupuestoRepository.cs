@@ -7,7 +7,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
     {
         readonly string cadenaConexion = "Data Source=DB/Tienda.db;Cache=Shared";
 
-        public bool CrearPresupuesto(Presupuesto budget)
+        public bool CrearPresupuesto(AltaPresupuestoViewModel budget)
         {
             bool anda = false;
             if(budget != null)
@@ -21,7 +21,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                         var query = @"INSERT INTO Presupuestos (idCliente, FechaCreacion) VALUES (@idCliente, @FechaCreacion);";
                         var command = new SqliteCommand(query, connection);
                         command.Parameters.AddWithValue("@idCliente", budget.IdCliente);
-                        command.Parameters.AddWithValue("@FechaCreacion", budget.FechaCreacion);
+                        command.Parameters.AddWithValue("@FechaCreacion", DateOnly.FromDateTime(DateTime.Today).ToString("o"));
                         anda = command.ExecuteNonQuery() > 0;
                         connection.Close();
                     }
@@ -79,40 +79,37 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             return ObtenerPresupuestos().Find(x => x.IdPresupuesto == id);
         }
 
-        public bool AgregarProducto(int idPres, PresupuestoDetalle detalle)
+        public bool AgregarProducto(AgregarProductoViewModel detalle)
         {
-            Presupuesto? aux = Buscar(idPres);
-            Producto? auxProd = new ProductoRepository().Buscar(detalle.IDProducto);
+            Presupuesto? aux = Buscar(detalle.IdPresupuesto);
+            Producto? auxProd = new ProductoRepository().Buscar(detalle.IdProducto);
             bool anda = false;
-            if(aux != null && aux != default(Presupuesto) && auxProd != null && auxProd != default(Producto))
+            if(aux != null && aux != default(Presupuesto) && auxProd != null && auxProd != default(Producto) && aux.Detalle.Exists(x => x.Producto.IdProducto == detalle.IdProducto))
             {
-                if(aux.Detalle.Exists(x => x.Producto.IdProducto == auxProd.IdProducto))
+                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
                 {
-                    using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
-                    {
-                        var query = @"UPDATE PresupuestosDetalle SET Cantidad = Cantidad + @Cant WHERE idPresupuesto = @idPresu AND idProducto = @idProdu;";
-                        connection.Open();
-                        var command = new SqliteCommand(query, connection);
-                        command.Parameters.AddWithValue("@Cant", detalle.Cantidad);
-                        command.Parameters.AddWithValue("@idPresu", idPres);
-                        command.Parameters.AddWithValue("@idProdu", detalle.IDProducto);
-                        anda = command.ExecuteNonQuery() > 0;
-                        connection.Close();
-                    }
+                    var query = @"UPDATE PresupuestosDetalle SET Cantidad = Cantidad + @Cant WHEREidPresupuesto = @idPresu AND idProducto = @idProdu;";
+                    connection.Open();
+                    var command = new SqliteCommand(query, connection);
+                    command.Parameters.AddWithValue("@Cant", detalle.Cantidad);
+                    command.Parameters.AddWithValue("@idPresu", detalle.IdPresupuesto);
+                    command.Parameters.AddWithValue("@idProdu", detalle.IdProducto);
+                    anda = command.ExecuteNonQuery() > 0;
+                    connection.Close();
                 }
-                else
+            }
+            else
+            {
+                using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
                 {
-                    using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
-                    {
-                        var query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) VALUES (@idPres, @idProd, @cant);";
-                        connection.Open();
-                        var command = new SqliteCommand(query, connection);
-                        command.Parameters.AddWithValue("@idPres", aux.IdPresupuesto);
-                        command.Parameters.AddWithValue("@idProd", auxProd.IdProducto);
-                        command.Parameters.AddWithValue("@cant", detalle.Cantidad);
-                        anda = command.ExecuteNonQuery() > 0;
-                        connection.Close();
-                    }
+                    var query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad)VALUES (@idPres, @idProd, @cant);";
+                    connection.Open();
+                    var command = new SqliteCommand(query, connection);
+                    command.Parameters.AddWithValue("@idPres", aux.IdPresupuesto);
+                    command.Parameters.AddWithValue("@idProd", auxProd.IdProducto);
+                    command.Parameters.AddWithValue("@cant", detalle.Cantidad);
+                    anda = command.ExecuteNonQuery() > 0;
+                    connection.Close();
                 }
             }
             return anda;

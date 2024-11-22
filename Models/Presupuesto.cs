@@ -11,7 +11,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Models
         public Cliente Cliente { get => cliente; }
         public string FechaCreacion { get => fechaCreacion; }
         public List<PresupuestoDetalle> Detalle { get => detalle; }
-        public int IdCliente {get; set;}
 
         public Presupuesto()
         {
