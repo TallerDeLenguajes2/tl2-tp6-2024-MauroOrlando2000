@@ -8,6 +8,7 @@ builder.Services.AddControllersWithViews();
 //Inyectando dependencias
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestoRepository, PresupuestoRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 

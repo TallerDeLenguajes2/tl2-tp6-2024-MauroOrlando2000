@@ -11,5 +11,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
         public bool ModificarPassword(int id, string password);
         public bool EliminarUsuario(int id);
         public bool CambiarRol(int id);
+        public bool Confirmar(User usuario);
     }
 }

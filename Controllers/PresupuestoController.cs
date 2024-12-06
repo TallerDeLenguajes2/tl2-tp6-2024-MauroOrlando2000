@@ -9,9 +9,11 @@ namespace tl2_tp6_2024_MauroOrlando2000.Controllers;
 public class PresupuestoController : Controller
 {
     private IPresupuestoRepository repositorioPresupuestos;
-    public PresupuestoController(IPresupuestoRepository repositorioPres)
+    private IUserRepository repositorioUsuarios;
+    public PresupuestoController(IPresupuestoRepository repositorioPres, IUserRepository repositorioUser)
     {
         repositorioPresupuestos = repositorioPres;
+        repositorioUsuarios = repositorioUser;
     }
 
     [HttpGet]
@@ -92,6 +94,18 @@ public class PresupuestoController : Controller
     public IActionResult Confirmar()
     {
         return View();
+    }
+
+    [HttpGet("/Presupuesto/IniciarSesion")]
+    public IActionResult IniciarSesion()
+    {
+        return View();
+    }
+
+    [HttpPost("/Presupuesto/Login")]
+    public IActionResult Login(User usuario)
+    {
+        
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

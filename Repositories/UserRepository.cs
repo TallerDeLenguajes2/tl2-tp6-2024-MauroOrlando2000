@@ -11,7 +11,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             bool anda = false;
             using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
-                var query = @"INSERT INTO Usuarios (Nombre, Usuario, Password, Rol) VALUES (@name, @user, @contra, 0);";
+                var query = @"INSERT INTO Usuarios (Nombre, Usuario, Password, Rol) VALUES (@name, @user, @contra, 1);";
                 connection.Open();
                 var command = new SqliteCommand(query, connection);
                 command.Parameters.AddWithValue("@name", usuario.Nombre);
@@ -139,6 +139,11 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                 }
             }
             return anda;
+        }
+
+        public bool Confirmar(User usuario)
+        {
+            return true;
         }
     }
 }
