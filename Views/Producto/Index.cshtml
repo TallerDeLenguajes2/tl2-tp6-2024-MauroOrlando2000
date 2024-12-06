@@ -7,7 +7,7 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>ID</th><th>Nombre</th><th>Precio</th>
+            <th>Nombre</th><th>Precio</th>
         </tr>
     </thead>
     <tbody>
@@ -15,11 +15,14 @@
             foreach(Producto product in Model)
             {
                 <tr>
-                    <td>@product.IdProducto</td><td>@product.Descripcion</td><td>@product.Precio.ToString("c")</td>
+                    <td>@product.Descripcion</td
+                    ><td>@product.Precio.ToString("c")</td>
                     <td><a class="btn btn-primary" asp-action="ModificarProducto" asp-controller="Producto" asp-route-id="@product.IdProducto">Modificar</a></td>
-                    <td><form asp-action="EliminarProducto" asp-controller="Producto" asp-route-id="@product.IdProducto" metohd="post">
-                        <input type="submit" class="btn btn-danger" value="Eliminar" onclick="return confirm('¿Desea eliminar @product.Descripcion de la lista?');">
-                    </form></td>
+                    <td>
+                        <form asp-action="EliminarProducto" asp-controller="Producto" asp-route-id="@product.IdProducto" metohd="post">
+                            <input type="submit" class="btn btn-danger" value="Eliminar" onclick="return confirm('¿Desea eliminar @product.Descripcion de la lista?');">
+                        </form>
+                    </td>
                 </tr>
             }
         }

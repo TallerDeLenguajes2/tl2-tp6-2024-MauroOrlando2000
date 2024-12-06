@@ -11,11 +11,10 @@
     <h5 style="margin-bottom: 1em;">Cantidad: @detalle.Cantidad</h5>
 }
 
-<form asp-action="ModificarPresupuesto" method="post" autocomplete="off">
+<form asp-action="ModificarPresupuesto" method="post">
     <div class="form-group">
         <label asp-for="NombreDestinatario">Nombre:</label>
-        <input type="text" asp-for="NombreDestinatario" required>
-        <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
+        <input asp-for="NombreDestinatario" required>
     </div>
     <input type="submit" value="Enviar" class="btn btn-primary">
 </form>

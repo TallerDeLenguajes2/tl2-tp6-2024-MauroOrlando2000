@@ -1,7 +1,13 @@
+using tl2_tp6_2024_MauroOrlando2000.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//Inyectando dependencias
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+builder.Services.AddScoped<IPresupuestoRepository, PresupuestoRepository>();
 
 var app = builder.Build();
 

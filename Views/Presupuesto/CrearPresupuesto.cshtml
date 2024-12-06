@@ -6,10 +6,8 @@
 
 <form asp-action="CrearPresupuesto" method="post">
     <div class="form-group">
-        <label for="NombreDestinatario">Nombre destinatario:</label>
-        <input type="text" id="NombreDestinatario" name="NombreDestinatario" required>
-        <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
+        <label asp-for="NombreDestinatario">Nombre destinatario:</label>
+        <input asp-for="NombreDestinatario" required>
     </div>
     <input type="submit" value="Enviar" class="btn btn-primary">
-    <input type="reset" value="Borrar" class="btn btn-danger">
 </form>

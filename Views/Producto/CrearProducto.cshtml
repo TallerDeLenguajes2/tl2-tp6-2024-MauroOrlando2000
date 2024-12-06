@@ -6,14 +6,12 @@
 
 <form asp-action="CrearProducto" method="post">
     <div class="form-group">
-        <label for="Descripcion">Descripcion:</label>
-        <input type="text" id="Descripcion" name="Descripcion" required>
-        <span asp-validation-for="Descripcion" class="text-danger"></span>
+        <label asp-for="Descripcion">Descripcion:</label>
+        <input asp-for="Descripcion" style="margin-bottom: 0.25em;" required>
     </div>
     <div class ="form-group">
-        <label for="Precio">Precio:</label>
-        <input type="number" for="Precio" name="Precio" required>
+        <label asp-for="Precio">Precio:</label>
+        <input asp-for="Precio" style="margin-bottom: 0.25em;" required>
     </div>
     <input type="submit" value="Enviar" class="btn btn-primary">
-    <input type="reset" value="Borrar" class="btn btn-primary">
 </form>

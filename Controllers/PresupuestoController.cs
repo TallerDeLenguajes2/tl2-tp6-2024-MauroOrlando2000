@@ -1,18 +1,17 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using tl2_tp6_2024_MauroOrlando2000.Models;
 using tl2_tp6_2024_MauroOrlando2000.Repositories;
+using tl2_tp6_2024_MauroOrlando2000.ViewModels;
 namespace tl2_tp6_2024_MauroOrlando2000.Controllers;
 
-[Route("controller")]
+[Route("Presupuesto")]
 public class PresupuestoController : Controller
 {
     private IPresupuestoRepository repositorioPresupuestos;
-
-    public PresupuestoController()
+    public PresupuestoController(IPresupuestoRepository repositorioPres)
     {
-        repositorioPresupuestos = new PresupuestoRepository();
+        repositorioPresupuestos = repositorioPres;
     }
 
     [HttpGet]
@@ -21,74 +20,76 @@ public class PresupuestoController : Controller
         return View(repositorioPresupuestos.ObtenerPresupuestos());
     }
 
-    [HttpGet("/CrearPresupuesto")]
+    [HttpGet("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto()
     {
         return View();
     }
 
-    [HttpPost("/CrearPresupuesto")]
+    [HttpPost("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto([FromForm]Presupuesto budget)
     {
         if(!repositorioPresupuestos.CrearPresupuesto(budget))
         {
-            return RedirectToAction("Error", "Presupuesto");
+            return View();
         }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
+        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
-    [HttpGet("/ModificarPresupuesto/{id}")]
+    [HttpGet("/Presupuesto/ModificarPresupuesto/{id}")]
     public IActionResult ModificarPresupuesto([FromRoute]int id)
     {
         return View(repositorioPresupuestos.Buscar(id));
     }
 
-    [HttpPost("/ModificarPresupuesto/{id}")]
+    [HttpPost("/Presupuesto/ModificarPresupuesto/{id}")]
     public IActionResult ModificarPresupuesto([FromRoute]int id, [FromForm]Presupuesto budget)
     {
         if(!repositorioPresupuestos.ModificarPresupuesto(id, budget))
         {
-            return RedirectToAction("Error", "Presupuesto");
+            return View(repositorioPresupuestos.Buscar(id));
         }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
+        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
-    [HttpPost("EliminarPresupuesto/{id}")]
+    [HttpPost("/Presupuesto/EliminarPresupuesto/{id}")]
     public IActionResult EliminarPresupuesto([FromRoute]int id)
     {
         if(!repositorioPresupuestos.EliminarPresupuesto(id))
         {
-            return RedirectToAction("Error", "Presupuesto");
+            return RedirectToAction($"VistaDetallada/{id}", "Presupuesto");
         }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
+        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
-    [HttpGet("/AgregarProducto/{id}")]
+    [HttpGet("/Presupuesto/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromRoute]int id)
     {
-        ViewData["idPres"] = id;
-        ViewData["Productos"] = new ProductoRepository().ObtenerProductos();
-        return View();
+        var ViewProductos = new AgregarProductoViewModel();
+        ViewProductos.IdPresupuesto = id;
+        return View(ViewProductos);
     }
 
-    [HttpPost("/AgregarProducto/{id}")]
-    public IActionResult AgregarProducto([FromRoute]int id, [FromForm]PresupuestoDetalle detalle)
+    [HttpPost("/Presupuesto/AgregarProducto/{id}")]
+    public IActionResult AgregarProducto([FromForm]AgregarProductoViewModel detalle)
     {
-        if(!repositorioPresupuestos.AgregarProducto(id, detalle))
+        if(!repositorioPresupuestos.AgregarProducto(detalle))
         {
-            return RedirectToAction("Error", "Presupuesto");
+            var ViewProductos = new AgregarProductoViewModel();
+            ViewProductos.IdPresupuesto = detalle.IdPresupuesto;
+            return View(ViewProductos);
         }
-        return RedirectToAction("ConfirmarPres", "Presupuesto");
+        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
-    [HttpGet("/VistaDetallada/{id}")]
+    [HttpGet("/Presupuesto/VistaDetallada/{id}")]
     public IActionResult VistaDetallada([FromRoute]int id)
     {
         return View(repositorioPresupuestos.Buscar(id));
     }
 
-    [HttpGet("/ConfirmarPres")]
-    public IActionResult ConfirmarPres()
+    [HttpGet("/Presupuesto/Confirmar")]
+    public IActionResult Confirmar()
     {
         return View();
     }

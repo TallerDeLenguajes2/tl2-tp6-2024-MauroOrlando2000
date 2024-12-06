@@ -8,14 +8,13 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>ID</th><th>Nombre Destinatario</th><th>Fecha Creacion</th><th>Productos</th><th>Items</th><th>Monto</th><th>Monto Con IVA</th>
+            <th>Nombre Destinatario</th><th>Fecha Creacion</th><th>Productos</th><th>Items</th><th>Monto</th><th>Monto Con IVA</th>
         </tr>
     </thead>
     <tbody>
         @foreach(Presupuesto presupuesto in Model)
         {
             <tr>
-                <td>@presupuesto.IdPresupuesto</td>
                 <td>@presupuesto.NombreDestinatario</td>
                 <td>@presupuesto.FechaCreacion</td>
                 <td>@presupuesto.Detalle.Count</td>

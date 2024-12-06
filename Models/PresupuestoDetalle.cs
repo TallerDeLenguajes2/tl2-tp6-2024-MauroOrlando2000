@@ -6,7 +6,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Models
         private int cantidad;
         public Producto Producto { get => producto; set => producto = value; }
         public int Cantidad { get => cantidad; set => cantidad = value; }
-        public int IDProducto {get; set;}
 
         public PresupuestoDetalle(){}
         

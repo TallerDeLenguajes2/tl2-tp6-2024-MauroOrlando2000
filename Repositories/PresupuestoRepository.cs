@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using tl2_tp6_2024_MauroOrlando2000.Models;
+using tl2_tp6_2024_MauroOrlando2000.ViewModels;
 
 namespace tl2_tp6_2024_MauroOrlando2000.Repositories
 {
@@ -71,10 +72,10 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             return ObtenerPresupuestos().Find(x => x.IdPresupuesto == id);
         }
 
-        public bool AgregarProducto(int idPres, PresupuestoDetalle detalle)
+        public bool AgregarProducto(AgregarProductoViewModel detalle)
         {
-            Presupuesto? aux = Buscar(idPres);
-            Producto? auxProd = new ProductoRepository().ObtenerProductos().Find(x => x.IdProducto == detalle.IDProducto);
+            Presupuesto? aux = Buscar(detalle.IdPresupuesto);
+            Producto? auxProd = new ProductoRepository().Buscar(detalle.IdProducto);
             bool anda = false;
             if(aux != null && aux != default(Presupuesto) && auxProd != null && auxProd != default(Producto))
             {
@@ -83,8 +84,8 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                     var query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) VALUES (@idPres, @idProd, @cant);";
                     connection.Open();
                     var command = new SqliteCommand(query, connection);
-                    command.Parameters.AddWithValue("@idPres", aux.IdPresupuesto);
-                    command.Parameters.AddWithValue("@idProd", auxProd.IdProducto);
+                    command.Parameters.AddWithValue("@idPres", detalle.IdPresupuesto);
+                    command.Parameters.AddWithValue("@idProd", detalle.IdProducto);
                     command.Parameters.AddWithValue("@cant", detalle.Cantidad);
                     anda = command.ExecuteNonQuery() > 0;
                     connection.Close();
