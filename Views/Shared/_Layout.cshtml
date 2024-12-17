@@ -31,6 +31,20 @@
                     </ul>
                 </div>
             </div>
+            <div style="text-align: right;">
+            @if(ViewData["username"] == null)
+            {
+                <p>Usuario no logueado</p>
+                <a asp-controller="Presupuesto" asp-action="IniciarSesion">Loguearse</a>
+            }
+            else
+            {
+                <p>Bienvenido, @ViewData["username"]</p>
+                <form action="Presupuesto/Logout" method="post">
+                    <input type="submit" value="Logout">
+                </form>
+            }
+        </div>
         </nav>
     </header>
     <div class="container">

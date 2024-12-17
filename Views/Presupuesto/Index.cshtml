@@ -1,6 +1,9 @@
 @model IEnumerable<tl2_tp6_2024_MauroOrlando2000.Models.Presupuesto>
 
-@{ ViewData["Title"] = "Lista de presupuestos"; }
+@{ 
+    ViewData["Title"] = "Lista de presupuestos";
+    int Rol = (int)ViewData["Rol"];
+}
 
 <h1>@ViewData["Title"]</h1>
 <a asp-action="CrearPresupuesto" asp-controller="Presupuesto" class="btn btn-primary mb-3">Crear Presupuesto</a>
@@ -22,10 +25,13 @@
                 <td>@presupuesto.MontoPresupuesto().ToString("c")</td>
                 <td>@presupuesto.MontoPresupuestoConIVA().ToString("c")</td>
                 <td><a asp-action="VistaDetallada" asp-controller="Presupuesto" asp-route-id="@presupuesto.IdPresupuesto" class="btn btn-secondary">Ver detalle</a></td>
-                <td><a asp-action="ModificarPresupuesto" asp-controller="Presupuesto" asp-route-id="@presupuesto.IdPresupuesto" class="btn btn-primary mb-3">Modificar</a></td>
-                <td><form asp-action="EliminarPresupuesto" asp-controller="Presupuesto" asp-route-id="@presupuesto.IdPresupuesto" method="post">
+                @if(Rol == 2)
+                {
+                    <td><a asp-action="ModificarPresupuesto" asp-controller="Presupuesto" asp-route-id="@presupuesto.IdPresupuesto" class="btn btn-primary mb-3">Modificar</a></td>
+                    <td><form asp-action="EliminarPresupuesto" asp-controller="Presupuesto" asp-route-id="@presupuesto.IdPresupuesto" method="post">
                     <input type="submit" class="btn btn-danger" value="Eliminar" onclick="return confirm('¿Desea eliminar el presupuesto de @presupuesto.NombreDestinatario?')">
-                </form>
+                    </form></td>
+                }
             </tr>
         }
     </tbody>

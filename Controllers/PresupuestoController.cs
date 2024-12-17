@@ -19,12 +19,30 @@ public class PresupuestoController : Controller
     [HttpGet]
     public IActionResult Index()
     {
+        var username = Request.Cookies["username"];
+        if(username == null)
+        {
+            return RedirectToAction("IniciarSesion", "Presupuesto");
+        }
+        ViewData["username"] = username;
+        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
         return View(repositorioPresupuestos.ObtenerPresupuestos());
     }
 
     [HttpGet("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto()
     {
+        var username = Request.Cookies["username"];
+        var Rol = HttpContext.Session.GetInt32("role");
+        if(username == null)
+        {
+            return RedirectToAction("IniciarSesion", "Presupuesto");
+        }
+        else if(Rol == 1)
+        {
+            return RedirectToAction("Index", "Presupuesto");
+        }
+        ViewData["username"] = username;
         return View();
     }
 
@@ -41,6 +59,18 @@ public class PresupuestoController : Controller
     [HttpGet("/Presupuesto/ModificarPresupuesto/{id}")]
     public IActionResult ModificarPresupuesto([FromRoute]int id)
     {
+        var username = Request.Cookies["username"];
+        var Rol = HttpContext.Session.GetInt32("Rol");
+        if(username == null)
+        {
+            return RedirectToAction("IniciarSesion", "Presupuesto");
+        }
+        else if(Rol == 1)
+        {
+            return RedirectToAction("Index", "Presupuesto");
+        }
+        ViewData["username"] = username;
+        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
         return View(repositorioPresupuestos.Buscar(id));
     }
 
@@ -67,6 +97,13 @@ public class PresupuestoController : Controller
     [HttpGet("/Presupuesto/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromRoute]int id)
     {
+        var username = Request.Cookies["username"];
+        if(username == null)
+        {
+            return RedirectToAction("IniciarSesion", "Presupuesto");
+        }
+        ViewData["username"] = username;
+        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
         var ViewProductos = new AgregarProductoViewModel();
         ViewProductos.IdPresupuesto = id;
         return View(ViewProductos);
@@ -87,6 +124,13 @@ public class PresupuestoController : Controller
     [HttpGet("/Presupuesto/VistaDetallada/{id}")]
     public IActionResult VistaDetallada([FromRoute]int id)
     {
+        var username = Request.Cookies["username"];
+        if(username == null)
+        {
+            return RedirectToAction("IniciarSesion", "Presupuesto");
+        }
+        ViewData["username"] = username;
+        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
         return View(repositorioPresupuestos.Buscar(id));
     }
 
@@ -99,14 +143,43 @@ public class PresupuestoController : Controller
     [HttpGet("/Presupuesto/IniciarSesion")]
     public IActionResult IniciarSesion()
     {
+        var username = Request.Cookies["username"];
+        if(username != null)
+        {
+            return RedirectToAction("Index", "Presupuesto");
+        }
         return View();
     }
 
-    [HttpPost("/Presupuesto/Login")]
-    public IActionResult Login(User usuario)
+    [HttpPost("/Presupuesto/IniciarSesion")]
+    public IActionResult IniciarSesion([FromForm]UserViewModel log)
     {
-        
+        var user = repositorioUsuarios.Login(log.Usuario, log.Password);
+        if(user == null)
+        {
+            ViewData["Fallo"] = "Usuario no encontrado";
+            return View();
+        }
+        HttpContext.Session.SetInt32("role", user.Rol);
+        Response.Cookies.Append("username", user.Usuario, new CookieOptions{
+            Expires = DateTime.Now.AddSeconds(60)
+        });
+        return RedirectToAction("Index", "Presupuesto");
     }
+
+    [HttpPost("/Presupuesto/Logout")]
+    public IActionResult Logout()
+    {
+        /* Console.WriteLine("Variable de sesion antes: " + HttpContext.Session.GetInt32("role"));
+        Console.WriteLine("Cookie antes: " + Request.Cookies["username"]); */
+        Response.Cookies.Delete("username");
+        HttpContext.Session.Clear();
+        /* Console.WriteLine("Variable de sesion despues: " + HttpContext.Session.GetInt32("role"));
+        Console.WriteLine("Cookie despues: " + Request.Cookies["username"]); */
+        //Solo por propósito de debug
+        return RedirectToAction("Index", "Presupuesto");
+    }
+    
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

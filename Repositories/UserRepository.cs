@@ -6,17 +6,20 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly string cadenaConexion = "Data Source=DB/Tienda.db;Cache=Shared;";
+        public const int Client = 1;
+        public const int Admin = 2;
         public bool CrearUsuario(User usuario)
         {
             bool anda = false;
             using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
-                var query = @"INSERT INTO Usuarios (Nombre, Usuario, Password, Rol) VALUES (@name, @user, @contra, 1);";
+                var query = @"INSERT INTO Usuarios (Nombre, Usuario, Password, Rol) VALUES (@name, @user, @contra, @rol);";
                 connection.Open();
                 var command = new SqliteCommand(query, connection);
                 command.Parameters.AddWithValue("@name", usuario.Nombre);
                 command.Parameters.AddWithValue("@user", usuario.Usuario);
                 command.Parameters.AddWithValue("@contra", usuario.Password);
+                command.Parameters.AddWithValue("@rol", Client);
                 anda = command.ExecuteNonQuery() > 0;
                 connection.Close();
             }
@@ -122,17 +125,17 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             {
                 using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
                 {
-                    string query;
-                    if(aux.Rol == 0)
+                    string query = @"UPDATE Usuarios SET Rol = @rol WHERE IdUsuario = @iduser;";
+                    connection.Open();
+                    var command = new SqliteCommand(query, connection);
+                    if(aux.Rol == Client)
                     {
-                        query = @"UPDATE Usuarios SET Rol = 1 WHERE IdUsuario = @iduser;";
+                        command.Parameters.AddWithValue("@rol", Admin);
                     }
                     else
                     {
-                        query = @"UPDATE Usuarios SET ROL = 0 WHERE IdUsuario = @iduser;";
+                        command.Parameters.AddWithValue("@rol", Client);
                     }
-                    connection.Open();
-                    var command = new SqliteCommand(query, connection);
                     command.Parameters.AddWithValue("@iduser", id);
                     anda = command.ExecuteNonQuery() > 0;
                     connection.Close();
@@ -141,9 +144,9 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             return anda;
         }
 
-        public bool Confirmar(User usuario)
+        public User? Login(string usuario, string contra)
         {
-            return true;
+            return ObtenerUsuarios().Find(x => x.Usuario == usuario && x.Password == contra);
         }
     }
 }
