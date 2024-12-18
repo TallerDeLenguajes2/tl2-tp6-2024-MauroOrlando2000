@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using tl2_tp6_2024_MauroOrlando2000.Models;
 using tl2_tp6_2024_MauroOrlando2000.Repositories;
@@ -10,128 +12,160 @@ public class PresupuestoController : Controller
 {
     private IPresupuestoRepository repositorioPresupuestos;
     private IUserRepository repositorioUsuarios;
-    public PresupuestoController(IPresupuestoRepository repositorioPres, IUserRepository repositorioUser)
+    private readonly ILogger<PresupuestoController> _logger;
+    public PresupuestoController(IPresupuestoRepository repositorioPres, IUserRepository repositorioUser, ILogger<PresupuestoController> logger)
     {
         repositorioPresupuestos = repositorioPres;
         repositorioUsuarios = repositorioUser;
+        _logger = logger;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
-        var username = Request.Cookies["username"];
-        if(username == null)
-        {
-            return RedirectToAction("IniciarSesion", "Presupuesto");
+        try{
+            var username = Request.Cookies["username"];
+            if(username == null)
+            {
+                return RedirectToAction("IniciarSesion", "Presupuesto");
+            }
+            ViewData["username"] = username;
+            ViewData["Rol"] = HttpContext.Session.GetInt32("role");
+            return View(repositorioPresupuestos.ObtenerPresupuestos());
         }
-        ViewData["username"] = username;
-        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
-        return View(repositorioPresupuestos.ObtenerPresupuestos());
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto()
     {
-        var username = Request.Cookies["username"];
-        var Rol = HttpContext.Session.GetInt32("role");
-        if(username == null)
-        {
-            return RedirectToAction("IniciarSesion", "Presupuesto");
+        try{
+            var username = Request.Cookies["username"];
+            var Rol = HttpContext.Session.GetInt32("role");
+            if(username == null)
+            {
+                return RedirectToAction("IniciarSesion", "Presupuesto");
+            }
+            else if(Rol == 1)
+            {
+                return RedirectToAction("Index", "Presupuesto");
+            }
+            ViewData["username"] = username;
+            return View();
         }
-        else if(Rol == 1)
-        {
-            return RedirectToAction("Index", "Presupuesto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
         }
-        ViewData["username"] = username;
-        return View();
     }
 
     [HttpPost("/Presupuesto/CrearPresupuesto")]
     public IActionResult CrearPresupuesto([FromForm]Presupuesto budget)
     {
-        if(!repositorioPresupuestos.CrearPresupuesto(budget))
-        {
-            return View();
+        try{
+            if(!repositorioPresupuestos.CrearPresupuesto(budget))
+            {
+                return View();
+            }
+            return RedirectToAction("Confirmar", "Presupuesto");
         }
-        return RedirectToAction("Confirmar", "Presupuesto");
-    }
-
-    [HttpGet("/Presupuesto/ModificarPresupuesto/{id}")]
-    public IActionResult ModificarPresupuesto([FromRoute]int id)
-    {
-        var username = Request.Cookies["username"];
-        var Rol = HttpContext.Session.GetInt32("Rol");
-        if(username == null)
-        {
-            return RedirectToAction("IniciarSesion", "Presupuesto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
         }
-        else if(Rol == 1)
-        {
-            return RedirectToAction("Index", "Presupuesto");
-        }
-        ViewData["username"] = username;
-        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
-        return View(repositorioPresupuestos.Buscar(id));
-    }
-
-    [HttpPost("/Presupuesto/ModificarPresupuesto/{id}")]
-    public IActionResult ModificarPresupuesto([FromRoute]int id, [FromForm]Presupuesto budget)
-    {
-        if(!repositorioPresupuestos.ModificarPresupuesto(id, budget))
-        {
-            return View(repositorioPresupuestos.Buscar(id));
-        }
-        return RedirectToAction("Confirmar", "Presupuesto");
     }
 
     [HttpPost("/Presupuesto/EliminarPresupuesto/{id}")]
     public IActionResult EliminarPresupuesto([FromRoute]int id)
     {
-        if(!repositorioPresupuestos.EliminarPresupuesto(id))
-        {
-            return RedirectToAction($"VistaDetallada/{id}", "Presupuesto");
+        try{
+            if(!repositorioPresupuestos.EliminarPresupuesto(id))
+            {
+                return RedirectToAction($"VistaDetallada/{id}", "Presupuesto");
+            }
+            return RedirectToAction("Confirmar", "Presupuesto");
         }
-        return RedirectToAction("Confirmar", "Presupuesto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("/Presupuesto/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromRoute]int id)
     {
-        var username = Request.Cookies["username"];
-        if(username == null)
-        {
-            return RedirectToAction("IniciarSesion", "Presupuesto");
+        try{
+            var username = Request.Cookies["username"];
+            if(username == null)
+            {
+                return RedirectToAction("IniciarSesion", "Presupuesto");
+            }
+            ViewData["username"] = username;
+            ViewData["Rol"] = HttpContext.Session.GetInt32("role");
+            var ViewProductos = new AgregarProductoViewModel();
+            ViewProductos.IdPresupuesto = id;
+            return View(ViewProductos);
         }
-        ViewData["username"] = username;
-        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
-        var ViewProductos = new AgregarProductoViewModel();
-        ViewProductos.IdPresupuesto = id;
-        return View(ViewProductos);
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("/Presupuesto/AgregarProducto/{id}")]
     public IActionResult AgregarProducto([FromForm]AgregarProductoViewModel detalle)
     {
-        if(!repositorioPresupuestos.AgregarProducto(detalle))
-        {
-            var ViewProductos = new AgregarProductoViewModel();
-            ViewProductos.IdPresupuesto = detalle.IdPresupuesto;
-            return View(ViewProductos);
+        try{
+            if(!repositorioPresupuestos.AgregarProducto(detalle))
+            {
+                var ViewProductos = new AgregarProductoViewModel();
+                ViewProductos.IdPresupuesto = detalle.IdPresupuesto;
+                return View(ViewProductos);
+            }
+            return RedirectToAction("Confirmar", "Presupuesto");
         }
-        return RedirectToAction("Confirmar", "Presupuesto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("/Presupuesto/VistaDetallada/{id}")]
     public IActionResult VistaDetallada([FromRoute]int id)
     {
-        var username = Request.Cookies["username"];
-        if(username == null)
-        {
-            return RedirectToAction("IniciarSesion", "Presupuesto");
+        try{
+            var username = Request.Cookies["username"];
+            if(username == null)
+            {
+                return RedirectToAction("IniciarSesion", "Presupuesto");
+            }
+            ViewData["username"] = username;
+            ViewData["Rol"] = HttpContext.Session.GetInt32("role");
+            return View(repositorioPresupuestos.Buscar(id));
         }
-        ViewData["username"] = username;
-        ViewData["Rol"] = HttpContext.Session.GetInt32("role");
-        return View(repositorioPresupuestos.Buscar(id));
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("/Presupuesto/VistaDetallada/EliminarProducto")]
+    public IActionResult EliminarProducto(int idPres, int idProd)
+    {
+        try{
+            if(!repositorioPresupuestos.EliminarProducto(idPres, idProd))
+            {
+                return RedirectToAction($"VistaDetallada/{idPres}", "Presupuesto");
+            }
+            return RedirectToAction("Confirmar", "Presupuesto");
+        }
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("/Presupuesto/Confirmar")]
@@ -143,44 +177,61 @@ public class PresupuestoController : Controller
     [HttpGet("/Presupuesto/IniciarSesion")]
     public IActionResult IniciarSesion()
     {
-        var username = Request.Cookies["username"];
-        if(username != null)
-        {
-            return RedirectToAction("Index", "Presupuesto");
+        try{
+            var username = Request.Cookies["username"];
+            if(username != null)
+            {
+                return RedirectToAction("Index", "Presupuesto");
+            }
+            return View();
         }
-        return View();
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("/Presupuesto/IniciarSesion")]
     public IActionResult IniciarSesion([FromForm]UserViewModel log)
     {
-        var user = repositorioUsuarios.Login(log.Usuario, log.Password);
-        if(user == null)
-        {
-            ViewData["Fallo"] = "Usuario no encontrado";
-            return View();
+        try{
+            var user = repositorioUsuarios.Login(log.Usuario, log.Password);
+            if(user == null)
+            {
+                _logger.LogWarning($"Intento de acceso invalido - Usuario:{log.Usuario} - Clave ingresada:{log.Password}");
+                ViewData["Fallo"] = "Usuario no encontrado";
+                return View();
+            }
+            _logger.LogInformation($"el usuario {user.Usuario} ingreso correctamente");
+            HttpContext.Session.SetInt32("role", user.Rol);
+            var options = new CookieOptions{
+                Expires = DateTime.Now.AddSeconds(60),
+                Secure = true,
+                HttpOnly = true
+            };
+            Response.Cookies.Append("username", user.Usuario, options);
+            return RedirectToAction("Index", "Presupuesto");
         }
-        HttpContext.Session.SetInt32("role", user.Rol);
-        Response.Cookies.Append("username", user.Usuario, new CookieOptions{
-            Expires = DateTime.Now.AddSeconds(60)
-        });
-        return RedirectToAction("Index", "Presupuesto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("/Presupuesto/Logout")]
     public IActionResult Logout()
     {
-        /* Console.WriteLine("Variable de sesion antes: " + HttpContext.Session.GetInt32("role"));
-        Console.WriteLine("Cookie antes: " + Request.Cookies["username"]); */
-        Response.Cookies.Delete("username");
-        HttpContext.Session.Clear();
-        /* Console.WriteLine("Variable de sesion despues: " + HttpContext.Session.GetInt32("role"));
-        Console.WriteLine("Cookie despues: " + Request.Cookies["username"]); */
-        //Solo por propósito de debug
-        return RedirectToAction("Index", "Presupuesto");
+        try{
+            Response.Cookies.Delete("username");
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Presupuesto");
+        }
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
     
-
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

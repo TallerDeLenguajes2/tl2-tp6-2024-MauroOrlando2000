@@ -8,58 +8,118 @@ namespace tl2_tp6_2024_MauroOrlando2000.Controllers;
 public class ProductoController : Controller
 {
     private IProductoRepository repositorioProductos;
+    private IUserRepository repositorioUsuarios;
+    private readonly ILogger<ProductoController> _logger;
 
-    public ProductoController(IProductoRepository repositorio)
+    public ProductoController(IProductoRepository productos, IUserRepository usuarios, ILogger<ProductoController> logger)
     {
-        repositorioProductos = repositorio;
+        repositorioProductos = productos;
+        repositorioUsuarios = usuarios;
+        _logger = logger;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
-        return View(repositorioProductos.ObtenerProductos());
+        try{
+            var username = Request.Cookies["username"];
+            if(username != null)
+            {
+                ViewData["username"] = username;
+                ViewBag.rol = HttpContext.Session.GetInt32("role");
+            }
+            return View(repositorioProductos.ObtenerProductos());
+        }
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("/Producto/CrearProducto")]
     public IActionResult CrearProducto()
     {
-        return View();
+        try{
+            var username = Request.Cookies["username"];
+            var rol = HttpContext.Session.GetInt32("role");
+            if(username == null || rol != 2)
+            {
+                return RedirectToAction("Index", "Producto");
+            }
+            return View();   
+        }
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("/Producto/CrearProducto")]
     public IActionResult CrearProducto([FromForm]Producto producto)
     {
-        if(!repositorioProductos.CrearProducto(producto))
-        {
-            return View();
+        try{
+            if(!repositorioProductos.CrearProducto(producto))
+            {
+                return View();
+            }
+            return RedirectToAction("Confirmar", "Producto");
         }
-        return RedirectToAction("Confirmar", "Producto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("/Producto/ModificarProducto/{id}")]
     public IActionResult ModificarProducto([FromRoute]int id)
     {
-        return View(repositorioProductos.Buscar(id));
+        try{
+            var username = Request.Cookies["username"];
+            var rol = HttpContext.Session.GetInt32("role");
+            if(username == null || rol != 2)
+            {
+                return RedirectToAction("Index", "Producto");
+            }
+            return View(repositorioProductos.Buscar(id));
+        }
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("/Producto/ModificarProducto/{id}")]
     public IActionResult ModificarProducto([FromRoute]int id, [FromForm]Producto producto)
     {
-        if(!repositorioProductos.ModificarProducto(id, producto))
-        {
-            return View(repositorioProductos.Buscar(id));
+        try{
+            if(!repositorioProductos.ModificarProducto(id, producto))
+            {
+                return View(repositorioProductos.Buscar(id));
+            }
+            return RedirectToAction("Confirmar", "Producto");
         }
-        return RedirectToAction("Confirmar", "Producto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("/Producto/EliminarProducto/{id}")]
     public IActionResult EliminarProducto([FromRoute]int id)
     {
-        if(!repositorioProductos.EliminarProducto(id))
-        {
-            return RedirectToAction("Index", "Producto");
+        try{
+            var username = Request.Cookies["username"];
+            var rol = HttpContext.Session.GetInt32("role");
+            if(username == null || rol != 2 || !repositorioProductos.EliminarProducto(id))
+            {
+                return RedirectToAction("Index", "Producto");
+            }
+            return RedirectToAction("Confirmar", "Producto");
         }
-        return RedirectToAction("Confirmar", "Producto");
+        catch(Exception ex){
+            _logger.LogError(ex.ToString());
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("/Producto/Confirmar")]

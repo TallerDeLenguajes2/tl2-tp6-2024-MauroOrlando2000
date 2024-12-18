@@ -1,9 +1,16 @@
 @model IEnumerable<tl2_tp6_2024_MauroOrlando2000.Models.Producto>
 
-@{ ViewData["Title"] = "Listado de productos"; }
+@{ 
+    ViewData["Title"] = "Listado de productos";
+    string username = (string)ViewData["username"];
+    int? rol = ViewBag.rol;
+}
 
 <h1>@ViewData["Title"]</h1>
-<a asp-action="CrearProducto" asp-controller="Producto" class="btn btn-primary mb-3">Crear Producto</a>
+@if(rol == 2)
+{
+    <a asp-action="CrearProducto" asp-controller="Producto" class="btn btn-primary mb-3">Crear Producto</a>
+}
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -11,20 +18,21 @@
         </tr>
     </thead>
     <tbody>
-        @{
-            foreach(Producto product in Model)
-            {
-                <tr>
-                    <td>@product.Descripcion</td
-                    ><td>@product.Precio.ToString("c")</td>
+        @foreach(Producto product in Model)
+        {
+            <tr>
+                <td>@product.Descripcion</td>
+                <td>@product.Precio.ToString("c")</td>
+                @if(rol == 2)
+                {
                     <td><a class="btn btn-primary" asp-action="ModificarProducto" asp-controller="Producto" asp-route-id="@product.IdProducto">Modificar</a></td>
                     <td>
                         <form asp-action="EliminarProducto" asp-controller="Producto" asp-route-id="@product.IdProducto" metohd="post">
                             <input type="submit" class="btn btn-danger" value="Eliminar" onclick="return confirm('¿Desea eliminar @product.Descripcion de la lista?');">
                         </form>
                     </td>
-                </tr>
-            }
+                }
+            </tr>
         }
     </tbody>
 </table>
