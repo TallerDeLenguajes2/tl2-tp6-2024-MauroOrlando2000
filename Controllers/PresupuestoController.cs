@@ -10,14 +10,16 @@ namespace tl2_tp6_2024_MauroOrlando2000.Controllers;
 [Route("Presupuesto")]
 public class PresupuestoController : Controller
 {
+    private readonly string cadena;
     private IPresupuestoRepository repositorioPresupuestos;
     private IUserRepository repositorioUsuarios;
     private readonly ILogger<PresupuestoController> _logger;
-    public PresupuestoController(IPresupuestoRepository repositorioPres, IUserRepository repositorioUser, ILogger<PresupuestoController> logger)
+    public PresupuestoController(IPresupuestoRepository repositorioPres, IUserRepository repositorioUser, ILogger<PresupuestoController> logger, string connectionString)
     {
         repositorioPresupuestos = repositorioPres;
         repositorioUsuarios = repositorioUser;
         _logger = logger;
+        cadena = connectionString;
     }
 
     [HttpGet]
@@ -66,10 +68,7 @@ public class PresupuestoController : Controller
     public IActionResult CrearPresupuesto([FromForm]Presupuesto budget)
     {
         try{
-            if(!repositorioPresupuestos.CrearPresupuesto(budget))
-            {
-                return View();
-            }
+            repositorioPresupuestos.CrearPresupuesto(budget);
             return RedirectToAction("Confirmar", "Presupuesto");
         }
         catch(Exception ex){
@@ -82,10 +81,7 @@ public class PresupuestoController : Controller
     public IActionResult EliminarPresupuesto([FromRoute]int id)
     {
         try{
-            if(!repositorioPresupuestos.EliminarPresupuesto(id))
-            {
-                return RedirectToAction($"VistaDetallada/{id}", "Presupuesto");
-            }
+            repositorioPresupuestos.EliminarPresupuesto(id);
             return RedirectToAction("Confirmar", "Presupuesto");
         }
         catch(Exception ex){
@@ -105,7 +101,7 @@ public class PresupuestoController : Controller
             }
             ViewData["username"] = username;
             ViewData["Rol"] = HttpContext.Session.GetInt32("role");
-            var ViewProductos = new AgregarProductoViewModel();
+            var ViewProductos = new AgregarProductoViewModel(cadena);
             ViewProductos.IdPresupuesto = id;
             return View(ViewProductos);
         }
@@ -119,12 +115,7 @@ public class PresupuestoController : Controller
     public IActionResult AgregarProducto([FromForm]AgregarProductoViewModel detalle)
     {
         try{
-            if(!repositorioPresupuestos.AgregarProducto(detalle))
-            {
-                var ViewProductos = new AgregarProductoViewModel();
-                ViewProductos.IdPresupuesto = detalle.IdPresupuesto;
-                return View(ViewProductos);
-            }
+            repositorioPresupuestos.AgregarProducto(detalle.IdPresupuesto, detalle.IdProducto, detalle.Cantidad);
             return RedirectToAction("Confirmar", "Presupuesto");
         }
         catch(Exception ex){
@@ -156,10 +147,7 @@ public class PresupuestoController : Controller
     public IActionResult EliminarProducto(int idPres, int idProd)
     {
         try{
-            if(!repositorioPresupuestos.EliminarProducto(idPres, idProd))
-            {
-                return RedirectToAction($"VistaDetallada/{idPres}", "Presupuesto");
-            }
+            repositorioPresupuestos.EliminarProducto(idPres, idProd);
             return RedirectToAction("Confirmar", "Presupuesto");
         }
         catch(Exception ex){
@@ -205,7 +193,7 @@ public class PresupuestoController : Controller
             _logger.LogInformation($"el usuario {user.Usuario} ingreso correctamente");
             HttpContext.Session.SetInt32("role", user.Rol);
             var options = new CookieOptions{
-                Expires = DateTime.Now.AddSeconds(60),
+                Expires = DateTime.Now.AddMinutes(15),
                 Secure = true,
                 HttpOnly = true
             };

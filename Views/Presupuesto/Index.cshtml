@@ -6,7 +6,10 @@
 }
 
 <h1>@ViewData["Title"]</h1>
-<a asp-action="CrearPresupuesto" asp-controller="Presupuesto" class="btn btn-primary mb-3">Crear Presupuesto</a>
+@if(Rol == 2)
+{
+    <a asp-action="CrearPresupuesto" asp-controller="Presupuesto" class="btn btn-primary mb-3">Crear Presupuesto</a>
+}
 
 <table class="table table-bordered">
     <thead>

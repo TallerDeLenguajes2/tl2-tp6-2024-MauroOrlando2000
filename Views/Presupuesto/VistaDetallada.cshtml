@@ -29,11 +29,14 @@
                     <td>@detail.Producto.Descripcion</td>
                     <td>@detail.Producto.Precio.ToString("C") x @detail.Cantidad</td>
                     <td>@detail.Monto().ToString("C")</td>
-                    <td><form asp-action="EliminarProducto" asp-controller="Presupuesto" method="post">
+                    @if(rol == 2)
+                    {
+                        <td><form asp-action="EliminarProducto" asp-controller="Presupuesto" method="post">
                         <input type="hidden" name="idPres" value="@Model.IdPresupuesto">
                         <input type="hidden" name="idProd" value="@detail.Producto.IdProducto">
                         <input type="submit" value="Borrar" class="btn btn-danger" onclick="return confirm('¿Desea el producto @detail.Producto.Descripcion?')">
-                    </form></td>
+                        </form></td>
+                    }
                 </tr>
             }
         }

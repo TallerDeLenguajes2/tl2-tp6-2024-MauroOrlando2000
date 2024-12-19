@@ -58,10 +58,7 @@ public class ProductoController : Controller
     public IActionResult CrearProducto([FromForm]Producto producto)
     {
         try{
-            if(!repositorioProductos.CrearProducto(producto))
-            {
-                return View();
-            }
+            repositorioProductos.CrearProducto(producto);
             return RedirectToAction("Confirmar", "Producto");
         }
         catch(Exception ex){
@@ -92,10 +89,7 @@ public class ProductoController : Controller
     public IActionResult ModificarProducto([FromRoute]int id, [FromForm]Producto producto)
     {
         try{
-            if(!repositorioProductos.ModificarProducto(id, producto))
-            {
-                return View(repositorioProductos.Buscar(id));
-            }
+            repositorioProductos.ModificarProducto(id, producto);
             return RedirectToAction("Confirmar", "Producto");
         }
         catch(Exception ex){
@@ -110,10 +104,11 @@ public class ProductoController : Controller
         try{
             var username = Request.Cookies["username"];
             var rol = HttpContext.Session.GetInt32("role");
-            if(username == null || rol != 2 || !repositorioProductos.EliminarProducto(id))
+            if(username == null || rol != 2)
             {
                 return RedirectToAction("Index", "Producto");
             }
+            repositorioProductos.EliminarProducto(id);
             return RedirectToAction("Confirmar", "Producto");
         }
         catch(Exception ex){

@@ -5,9 +5,14 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
 {
     public class ProductoRepository : IProductoRepository
     {
-        readonly string cadenaConexion = "Data Source=DB/Tienda.db;Cache=Shared;";
+        private readonly string cadenaConexion;
 
-        public bool CrearProducto(Producto product)
+        public ProductoRepository(string connectionString)
+        {
+            cadenaConexion = connectionString;
+        }
+
+        public void CrearProducto(Producto product)
         {
             try{
                 bool anda = false;
@@ -31,7 +36,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                 {
                     throw new Exception("Producto no creado o producto ya existente");
                 }
-                return anda;
             }
             catch(SqliteException){
                 throw new Exception("Error en la base de datos");
@@ -41,7 +45,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             }
         }
 
-        public bool ModificarProducto(int id, Producto product)
+        public void ModificarProducto(int id, Producto product)
         {
             try{
                 bool anda = false;
@@ -72,7 +76,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                 {
                     throw new Exception("Producto no modificado");
                 }
-                return anda;
             }
             catch(SqliteException){
                 throw new Exception("Error en la base de datos");
@@ -118,7 +121,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             }
         }
 
-        public bool EliminarProducto(int id)
+        public void EliminarProducto(int id)
         {
             try{
                 Producto? aux = Buscar(id);
@@ -139,7 +142,6 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
                 {
                     throw new Exception("Producto no eliminado");
                 }
-                return anda;
             }
             catch(SqliteException){
                 throw new Exception("Error en la base de datos");
@@ -149,7 +151,7 @@ namespace tl2_tp6_2024_MauroOrlando2000.Repositories
             }
         }
 
-        public Producto? Buscar(int id)
+        public Producto Buscar(int id)
         {
             try{
                 var aux = ObtenerProductos().Find(elemento => elemento.IdProducto == id);

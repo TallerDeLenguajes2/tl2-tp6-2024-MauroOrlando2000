@@ -23,8 +23,7 @@
             <tr>
                 <td>@product.Descripcion</td>
                 <td>@product.Precio.ToString("c")</td>
-                @if(rol == 2)
-                {
+                @if(rol == 2) {
                     <td><a class="btn btn-primary" asp-action="ModificarProducto" asp-controller="Producto" asp-route-id="@product.IdProducto">Modificar</a></td>
                     <td>
                         <form asp-action="EliminarProducto" asp-controller="Producto" asp-route-id="@product.IdProducto" metohd="post">

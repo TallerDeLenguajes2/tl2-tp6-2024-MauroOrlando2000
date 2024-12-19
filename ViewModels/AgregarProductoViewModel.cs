@@ -11,13 +11,14 @@ namespace tl2_tp6_2024_MauroOrlando2000.ViewModels
         public int Cantidad { get; set; }
         public List<SelectListItem> ListadoProductos { get; set; }
 
-        public AgregarProductoViewModel()
+    public AgregarProductoViewModel(){}
+        public AgregarProductoViewModel(string connectionString)
         {
-            List<Producto> productos = new ProductoRepository().ObtenerProductos();
+            List<Producto> productos = new ProductoRepository(connectionString).ObtenerProductos();
             ListadoProductos = productos.Select(x => new SelectListItem
             {
                 Value = x.IdProducto.ToString(),
-                Text = x.Descripcion + x.Precio.ToString("c")
+                Text = x.Descripcion +" - "+ x.Precio.ToString("c")
             }).ToList();
         }
     }
